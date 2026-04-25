@@ -49,160 +49,91 @@ export default function PhoneLayout({
   ];
 
   return (
-    <div
-      className="fixed inset-0 flex flex-col overflow-hidden"
-      style={{
-        ...bgStyle,
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.6s ease-out',
-      }}
-    >
-      {/* Background overlay */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(245,248,255,0.15)' }} />
-
-      {/* Top header bar */}
-      <div
-        className="relative z-10 flex items-center justify-between px-4 pt-3 pb-2 flex-shrink-0"
-        style={{
-          background: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(24px)',
-          borderBottom: '1px solid rgba(0,0,0,0.05)',
-          transform: isVisible ? 'translateY(0)' : 'translateY(-100%)',
-          transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }}
-      >
-
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
-          <img src={icons.coin} alt="coin" className="w-5 h-5 object-contain" />
-          <span className="font-black text-slate-800 text-sm">{formatNumber(state.coins)}</span>
+    /* Внешний контейнер для центрирования телефона на странице */
+    <div className="min-h-screen w-full flex items-center justify-center bg-zinc-900 p-4">
+      
+      /* Рамка телефона */
+      <div className="relative w-[375px] h-[812px] bg-black rounded-[50px] border-[10px] border-zinc-800 shadow-2xl overflow-hidden flex flex-col">
+        
+        /* Notch (Челка) */
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-7 bg-zinc-800 rounded-b-2xl z-50 flex items-center justify-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-zinc-900"></div>
+            <div className="w-10 h-1 rounded-full bg-zinc-900"></div>
         </div>
-      </div>
 
-      {/* Main content */}
-      <div className="relative flex-1 overflow-hidden">
-        {/* Game tab */}
+        /* Контент внутри телефона (твой оригинальный код с правками) */
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 py-4 overflow-y-auto"
+          className="relative flex-1 flex flex-col overflow-hidden"
           style={{
-            display: activeTab === 'game' ? 'flex' : 'none',
-            opacity: activeTab === 'game' ? 1 : 0,
-            transition: 'opacity 0.3s ease-out',
+            ...bgStyle,
+            opacity: isVisible ? 1 : 0,
+            transition: 'opacity 0.6s ease-out',
           }}
         >
-          <ClickerPanel state={state} onClickButton={onClickButton} />
-        </div>
+          {/* Background overlay */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(245,248,255,0.15)' }} />
 
-        {/* Full-screen side panels */}
-        {activeTab !== 'game' && (
+          {/* Top header bar */}
           <div
-            className="absolute inset-0 z-30 flex flex-col"
+            className="relative z-10 flex items-center justify-between px-4 pt-8 pb-2 flex-shrink-0"
             style={{
-              background: 'rgba(248,250,252,0.98)',
-              backdropFilter: 'blur(28px)',
-              animation: 'slideInRight 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(24px)',
+              borderBottom: '1px solid rgba(0,0,0,0.05)',
             }}
           >
-            {/* Panel header */}
-            <div
-              className="flex items-center justify-between px-5 pt-4 pb-3 flex-shrink-0"
-              style={{ borderBottom: '1px solid #f1f5f9' }}
-            >
-              <h2 className="text-xl font-black text-slate-800">
-                {activeTab === 'upgrades' && '⚡ Улучшения'}
-                {activeTab === 'gifts' && '🎁 Подарки'}
-                {activeTab === 'settings' && '⚙️ Настройки'}
-              </h2>
-              <button
-                onClick={() => setActiveTab('game')}
-                className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-slate-500 transition-all duration-300 active:scale-90 hover-lift"
-                style={{ background: '#f1f5f9', border: '1.5px solid #e2e8f0' }}
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Scrollable content */}
-            <div ref={panelRef} className="flex-1 overflow-y-auto px-4 py-4">
-              {activeTab === 'upgrades' && (
-                <UpgradesPanel state={state} onBuyMultiplier={onBuyMultiplier} onBuyAutoClicker={onBuyAutoClicker} />
-              )}
-              {activeTab === 'gifts' && (
-                <GiftsPanel state={state} onCollect={onCollectGift} />
-              )}
-              {activeTab === 'settings' && (
-                <SettingsPanel state={state} onUpdate={onUpdateSettings} onReset={onReset} />
-              )}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(59,130,246,0.15)' }}>
+              <img src={icons.coin} alt="coin" className="w-5 h-5 object-contain" />
+              <span className="font-black text-slate-800 text-sm">{formatNumber(state.coins)}</span>
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Bottom navigation */}
-      <div
-        className="relative z-40 flex-shrink-0"
-        style={{
-          background: 'rgba(255,255,255,0.97)',
-          backdropFilter: 'blur(28px)',
-          borderTop: '1px solid rgba(0,0,0,0.06)',
-          paddingBottom: 'env(safe-area-inset-bottom, 4px)',
-          transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }}
-      >
-        <div className="flex">
-          {tabs.map((tab, idx) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className="flex-1 flex flex-col items-center gap-1 py-2.5 px-1 transition-all duration-300 active:scale-90 relative"
+          {/* Main content */}
+          <div className="relative flex-1 overflow-hidden">
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 py-4 overflow-y-auto"
               style={{
-                opacity: isVisible ? 1 : 0,
-                transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-                transition: `all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 80}ms`,
+                display: activeTab === 'game' ? 'flex' : 'none',
+                opacity: activeTab === 'game' ? 1 : 0,
               }}
             >
-              {/* Active indicator */}
-              {activeTab === tab.id && (
-                <div
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 rounded-b-full"
-                  style={{
-                    background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
-                    boxShadow: '0 2px 8px rgba(59,130,246,0.4)',
-                  }}
-                />
-              )}
+              <ClickerPanel state={state} onClickButton={onClickButton} />
+            </div>
 
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 relative"
-                style={{
-                  background: activeTab === tab.id
-                    ? 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(147,197,253,0.1))'
-                    : 'transparent',
-                  transform: activeTab === tab.id ? 'scale(1.05)' : 'scale(1)',
-                }}
-              >
-                <img
-                  src={tab.icon}
-                  alt={tab.label}
-                  className="w-5 h-5 object-contain transition-all duration-300"
-                  style={{ filter: activeTab === tab.id ? 'none' : 'grayscale(40%) opacity(0.55)' }}
-                />
-                {/* Badge dot */}
-                {tab.badge && (
-                  <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 border border-white animate-pulse" />
-                )}
+            {activeTab !== 'game' && (
+              <div className="absolute inset-0 z-30 flex flex-col bg-slate-50/98 backdrop-blur-2xl animate-in slide-in-from-right duration-300">
+                <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-100">
+                  <h2 className="text-xl font-black text-slate-800">
+                    {activeTab === 'upgrades' && '⚡ Улучшения'}
+                    {activeTab === 'gifts' && '🎁 Подарки'}
+                    {activeTab === 'settings' && '⚙️ Настройки'}
+                  </h2>
+                  <button onClick={() => setActiveTab('game')} className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
+                </div>
+                <div ref={panelRef} className="flex-1 overflow-y-auto px-4 py-4">
+                  {activeTab === 'upgrades' && <UpgradesPanel state={state} onBuyMultiplier={onBuyMultiplier} onBuyAutoClicker={onBuyAutoClicker} />}
+                  {activeTab === 'gifts' && <GiftsPanel state={state} onCollect={onCollectGift} />}
+                  {activeTab === 'settings' && <SettingsPanel state={state} onUpdate={onUpdateSettings} onReset={onReset} />}
+                </div>
               </div>
+            )}
+          </div>
 
-              <span
-                className="text-[10px] font-bold transition-all duration-300"
-                style={{ color: activeTab === tab.id ? '#3b82f6' : '#94a3b8' }}
-              >
-                {tab.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+          {/* Bottom navigation */}
+          <div className="relative z-40 bg-white/97 backdrop-blur-xl border-t border-black/5 pb-6">
+            <div className="flex">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="flex-1 flex flex-col items-center gap-1 py-3 px-1 relative"
+                >
+                  {activeTab === tab.id && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-blue-500 rounded-b-full shadow-lg" />
+                  )}
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeTab === tab.id ? 'bg-blue-50' : ''}`}>
+                    <img src={tab.icon} className={`w-5 h-5 object-contain ${activeTab === tab.id ? '' : 'grayscale opacity-50'}`} alt={tab.label} />
+                    {tab.badge && <div className="absolute top-2 right-4 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-white" />}
+                  </div>
+                  <span className={`text-[10px] font-bold ${activeTab === tab.id ? 'text-blue-500' : 'text-slate-400'}`}>{tab.label}</span>
+                </button>
