@@ -4,6 +4,7 @@ import OOBEspidiOS from './ui-wintozo/OOBEspidiOS-qwerty';
 import ResetOOBE from './ui-wintozo/OOBE-spidiclicker-wintozo';
 import Game from './ui-wintozo/Game';
 import { ToastContainer, showToast } from './ui-wintozo/Toast';
+import PhoneLayout from './ui-wintozo/PhoneLayout'; // Импортируем обертку телефона
 
 export default function App() {
   const {
@@ -18,16 +19,16 @@ export default function App() {
   } = useGameState();
 
   const [isFirstTime, setIsFirstTime] = useState(() => {
-    // Проверяем, первый ли это запуск (полная OOBE) или сброс настроек
+    // Проверяем наличие данных в localStorage для определения типа OOBE
     try {
       const stored = localStorage.getItem('spidi_clicker_v2');
-      return !stored; // Первый раз, если нет сохраненных данных
+      return !stored;
     } catch {
       return true;
     }
   });
 
-  // Show welcome toast after onboarding
+  // Уведомление после завершения настройки
   useEffect(() => {
     if (state.completedOnboarding) {
       const timer = setTimeout(() => {
@@ -35,7 +36,6 @@ export default function App() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.completedOnboarding]);
 
   const handleBuyMultiplier = (price: number, mult: number) => {
@@ -45,54 +45,4 @@ export default function App() {
     }
   };
 
-  const handleCollectGift = () => {
-    if (!state.giftCollected) {
-      collectDailyGift();
-      const day = state.dailyGiftDay;
-      if (day === 5) {
-        showToast({ text: 'Получен Золотой Спиди! +50 к силе клика!', emoji: '⭐', type: 'warning' });
-      } else {
-        const amounts = [100, 1000, 5000, 10000];
-        showToast({ text: `+${amounts[day - 1]?.toLocaleString() ?? '?'} монет!`, emoji: '🎁', type: 'success' });
-      }
-    }
-  };
-
-  const handleReset = () => {
-    setIsFirstTime(false); // После сброса используем ResetOOBE
-    resetProgress();
-  };
-
-  if (!state.completedOnboarding) {
-    return (
-      <>
-        <ToastContainer />
-        {isFirstTime ? (
-          <OOBEspidiOS
-            onComplete={(settings) => {
-              completeOnboarding(settings);
-              setIsFirstTime(false);
-            }}
-          />
-        ) : (
-          <ResetOOBE onComplete={completeOnboarding} />
-        )}
-      </>
-    );
-  }
-
-  return (
-    <>
-      <ToastContainer />
-      <Game
-        state={state}
-        onClickButton={handleClick}
-        onBuyMultiplier={handleBuyMultiplier}
-        onBuyAutoClicker={buyAutoClicker}
-        onCollectGift={handleCollectGift}
-        onUpdateSettings={updateSettings}
-        onReset={handleReset}
-      />
-    </>
-  );
-}
+  const handleCollectGift = () =>
