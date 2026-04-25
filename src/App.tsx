@@ -4,7 +4,7 @@ import OOBEspidiOS from './ui-wintozo/OOBEspidiOS-qwerty';
 import ResetOOBE from './ui-wintozo/OOBE-spidiclicker-wintozo';
 import Game from './ui-wintozo/Game';
 import { ToastContainer, showToast } from './ui-wintozo/Toast';
-import PhoneLayout from './ui-wintozo/PhoneLayout'; // Импортируем обертку телефона
+import PhoneLayout from './ui-wintozo/PhoneLayout';
 
 export default function App() {
   const {
@@ -19,7 +19,6 @@ export default function App() {
   } = useGameState();
 
   const [isFirstTime, setIsFirstTime] = useState(() => {
-    // Проверяем наличие данных в localStorage для определения типа OOBE
     try {
       const stored = localStorage.getItem('spidi_clicker_v2');
       return !stored;
@@ -28,7 +27,6 @@ export default function App() {
     }
   });
 
-  // Уведомление после завершения настройки
   useEffect(() => {
     if (state.completedOnboarding) {
       const timer = setTimeout(() => {
@@ -41,8 +39,62 @@ export default function App() {
   const handleBuyMultiplier = (price: number, mult: number) => {
     if (state.coins >= price) {
       buyMultiplier(price, mult);
-      showToast({ text: `Множитель x${mult} активирован на 30 мин!`, emoji: '⚡', type: 'success' });
+      showToast({ text: `Множитель x${mult} активирован!`, emoji: '⚡', type: 'success' });
     }
   };
 
-  const handleCollectGift = () =>
+  const handleCollectGift = () => {
+    if (!state.giftCollected) {
+      collectDailyGift();
+      const day = state.dailyGiftDay;
+      if (day === 5) {
+        showToast({ text: 'Получен Золотой Спиди! +50 к силе клика!', emoji: '⭐', type: 'warning' });
+      } else {
+        const amounts = [100, 1000, 5000, 10000];
+        showToast({ text: `+${amounts[day - 1]?.toLocaleString() ?? '?'} монет!`, emoji: '🎁', type: 'success' });
+      }
+    }
+  };
+
+  const handleReset = () => {
+    setIsFirstTime(false);
+    resetProgress();
+  };
+
+  return (
+    <PhoneLayout
+      state={state}
+      onClickButton={handleClick}
+      onBuyMultiplier={handleBuyMultiplier}
+      onBuyAutoClicker={buyAutoClicker}
+      onCollectGift={handleCollectGift}
+      onUpdateSettings={updateSettings}
+      onReset={handleReset}
+    >
+      <ToastContainer />
+      
+      {!state.completedOnboarding ? (
+        isFirstTime ? (
+          <OOBEspidiOS
+            onComplete={(settings) => {
+              completeOnboarding(settings);
+              setIsFirstTime(false);
+            }}
+          />
+        ) : (
+          <ResetOOBE onComplete={completeOnboarding} />
+        )
+      ) : (
+        <Game
+          state={state}
+          onClickButton={handleClick}
+          onBuyMultiplier={handleBuyMultiplier}
+          onBuyAutoClicker={buyAutoClicker}
+          onCollectGift={handleCollectGift}
+          onUpdateSettings={updateSettings}
+          onReset={handleReset}
+        />
+      )}
+    </PhoneLayout>
+  );
+}
