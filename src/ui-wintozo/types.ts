@@ -15,6 +15,8 @@ export interface GameState {
   autoClickerLevel: number;
   autoClickerPower: number;
   activeMultiplier: Multiplier | null;
+  gameStartTime: number | null;
+  isGameLocked: boolean;
   medal100k: boolean;
   dailyGiftDay: number; // 1-5
   lastGiftTimestamp: number | null;
@@ -37,6 +39,8 @@ export const DEFAULT_STATE: GameState = {
   autoClickerLevel: 0,
   autoClickerPower: 1,
   activeMultiplier: null,
+  gameStartTime: null,
+  isGameLocked: false,
   medal100k: false,
   dailyGiftDay: 1,
   lastGiftTimestamp: null,

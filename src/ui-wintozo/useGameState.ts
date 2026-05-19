@@ -116,8 +116,34 @@ export function useGameState() {
     }
   }, [state.totalClicks, state.medal100k, setState]);
 
+  // Timer lock check (5 minutes from first click)
+  useEffect(() => {
+    if (!state.gameStartTime || state.isGameLocked) return;
+    
+    const lockDuration = 5 * 60 * 1000; // 5 minutes
+    const remaining = state.gameStartTime + lockDuration - Date.now();
+    
+    if (remaining <= 0) {
+      // Время истекло - блокируем игру
+      setState(prev => ({ ...prev, isGameLocked: true }));
+      return;
+    }
+    
+    const timeout = setTimeout(() => {
+      setState(prev => ({ ...prev, isGameLocked: true }));
+    }, remaining);
+    
+    return () => clearTimeout(timeout);
+  }, [state.gameStartTime, state.isGameLocked, setState]);
+
   const handleClick = useCallback(() => {
     setStateRaw(prev => {
+      // Если игра заблокирована - не даем кликать
+      if (prev.isGameLocked) return prev;
+      
+      // Запускаем таймер при первом клике
+      const newStartTime = prev.gameStartTime ?? Date.now();
+      
       const mult = prev.activeMultiplier && prev.activeMultiplier.endTime > Date.now()
         ? prev.activeMultiplier.value : 1;
       const power = (prev.clickPower + prev.permanentClickBonus) * mult;
@@ -125,6 +151,7 @@ export function useGameState() {
         ...prev,
         coins: prev.coins + power,
         totalClicks: prev.totalClicks + 1,
+        gameStartTime: newStartTime,
       };
       saveState(next);
       return next;
@@ -193,6 +220,13 @@ export function useGameState() {
     setStateRaw(fresh);
   }, []);
 
+  const getRemainingTime = useCallback((): number | null => {
+    if (!state.gameStartTime || state.isGameLocked) return null;
+    const lockDuration = 5 * 60 * 1000; // 5 minutes
+    const remaining = state.gameStartTime + lockDuration - Date.now();
+    return remaining > 0 ? remaining : 0;
+  }, [state.gameStartTime, state.isGameLocked]);
+
   return {
     state,
     setState,
@@ -203,5 +237,6 @@ export function useGameState() {
     updateSettings,
     completeOnboarding,
     resetProgress,
+    getRemainingTime,
   };
 }

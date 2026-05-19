@@ -10,6 +10,8 @@ interface Props {
   onCollectGift: () => void;
   onUpdateSettings: (updates: Partial<GameState>) => void;
   onReset: () => void;
+  getRemainingTime?: () => number | null;
+  isGameLocked?: boolean;
 }
 
 export default function Game(props: Props) {
